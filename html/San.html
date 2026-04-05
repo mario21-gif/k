@@ -1,0 +1,2393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Multi-Langages Ultime</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            padding: 10px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .language-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .lang-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+
+        .lang-tag:hover {
+            background: rgba(255,255,255,0.4);
+            transform: scale(1.1);
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 0;
+            height: calc(100vh - 200px);
+        }
+
+        .sidebar-left {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-left h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .language-item {
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .language-item:hover {
+            background: rgba(102, 126, 234, 0.3);
+            transform: translateX(5px);
+        }
+
+        .language-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+        }
+
+        .lang-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .lang-desc {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        .chat-section {
+            display: flex;
+            flex-direction: column;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.ai .message-content {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border-bottom-left-radius: 4px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .code-language {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .copy-btn {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .code-content {
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        /* Syntax Highlighting */
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; font-style: italic; }
+        .function { color: #dcdcaa; }
+        .number { color: #b5cea8; }
+        .tag { color: #4ec9b0; }
+        .attribute { color: #9cdcfe; }
+
+        .input-area {
+            display: flex;
+            padding: 20px;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.1);
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #userInput {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            background: rgba(255,255,255,0.05);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        #userInput::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        #userInput:focus {
+            border-color: #667eea;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar-right {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-right h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            text-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        .example-card {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+
+        .example-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        .example-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .example-text {
+            font-size: 12px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+
+        .typing {
+            display: none;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 18px;
+            width: fit-content;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .typing span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite;
+        }
+
+        .typing span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .download-btn {
+            background: rgba(76, 175, 80, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            background: rgba(76, 175, 80, 0.5);
+        }
+
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 200px 1fr;
+            }
+            .sidebar-right {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-left {
+                display: none;
+            }
+        }
+
+        /* Scrollbar personnalisée */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.5);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 IA Multi-Langages Ultime</h1>
+            <div class="language-tags">
+                <span class="lang-tag">🦇 BAT</span>
+                <span class="lang-tag">📜 VBS</span>
+                <span class="lang-tag">🐍 Python</span>
+                <span class="lang-tag">🌐 HTML</span>
+                <span class="lang-tag">🎨 CSS</span>
+                <span class="lang-tag">⚡ JavaScript</span>
+                <span class="lang-tag">➕ C++</span>
+                <span class="lang-tag">🔧 PowerShell</span>
+                <span class="lang-tag">🗄️ SQL</span>
+                <span class="lang-tag">📦 JSON</span>
+            </div>
+        </div>
+
+        <div class="main-layout">
+            <div class="sidebar-left">
+                <h3>💻 Langages</h3>
+                <div class="language-item" data-lang="bat">
+                    <div class="lang-name">🦇 Batch (.bat)</div>
+                    <div class="lang-desc">Scripts Windows</div>
+                </div>
+                <div class="language-item" data-lang="vbs">
+                    <div class="lang-name">📜 VBScript</div>
+                    <div class="lang-desc">Visual Basic Script</div>
+                </div>
+                <div class="language-item" data-lang="python">
+                    <div class="lang-name">🐍 Python</div>
+                    <div class="lang-desc">Langage polyvalent</div>
+                </div>
+                <div class="language-item" data-lang="html">
+                    <div class="lang-name">🌐 HTML</div>
+                    <div class="lang-desc">Structure web</div>
+                </div>
+                <div class="language-item" data-lang="css">
+                    <div class="lang-name">🎨 CSS</div>
+                    <div class="lang-desc">Style web</div>
+                </div>
+                <div class="language-item" data-lang="javascript">
+                    <div class="lang-name">⚡ JavaScript</div>
+                    <div class="lang-desc">Interactivité web</div>
+                </div>
+                <div class="language-item" data-lang="cpp">
+                    <div class="lang-name">➕ C++</div>
+                    <div class="lang-desc">Performance native</div>
+                </div>
+                <div class="language-item" data-lang="powershell">
+                    <div class="lang-name">🔧 PowerShell</div>
+                    <div class="lang-desc">Automatisation Windows</div>
+                </div>
+                <div class="language-item" data-lang="sql">
+                    <div class="lang-name">🗄️ SQL</div>
+                    <div class="lang-desc">Base de données</div>
+                </div>
+            </div>
+
+            <div class="chat-section">
+                <div class="chat-box" id="chatBox">
+                    <div class="message ai">
+                        <div class="message-content">
+                            🎉 <strong>Bienvenue dans l'IA Multi-Langages Ultime!</strong><br><br>
+                            Je peux générer du code dans <strong>10+ langages</strong> différents :<br>
+                            🦇 Batch (.bat) • 📜 VBScript • 🐍 Python • 🌐 HTML • 🎨 CSS<br>
+                            ⚡ JavaScript • ➕ C++ • 🔧 PowerShell • 🗄️ SQL • 📦 JSON<br><br>
+                            <strong>Essayez :</strong><br>
+                            • "génère un script bat pour créer un dossier"<br>
+                            • "code python pour lire un fichier"<br>
+                            • "page html avec du css"<br>
+                            • "programme c++ hello world"<br>
+                            • "script vbs pour afficher un message"
+                        </div>
+                    </div>
+                </div>
+                <div class="input-area">
+                    <input type="text" id="userInput" placeholder="Demandez du code dans n'importe quel langage..." />
+                    <button class="btn" id="sendBtn">Envoyer</button>
+                    <button class="btn btn-secondary" id="clearBtn">Effacer</button>
+                    <button class="btn btn-secondary" id="exampleBtn">Exemples</button>
+                </div>
+            </div>
+
+            <div class="sidebar-right">
+                <h3>📊 Statistiques</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="msgCount">0</div>
+                        <div class="stat-label">Messages</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="codeCount">0</div>
+                        <div class="stat-label">Codes générés</div>
+                    </div>
+                </div>
+
+                <h3>💡 Exemples rapides</h3>
+                <div class="example-card" data-example="génère un script bat pour lister les fichiers">
+                    <div class="example-title">📁 Batch - Lister fichiers</div>
+                    <div class="example-text">Script .bat pour explorer un répertoire</div>
+                </div>
+                <div class="example-card" data-example="code vbs pour afficher une boîte de dialogue">
+                    <div class="example-title">💬 VBScript - Message</div>
+                    <div class="example-text">Afficher une popup Windows</div>
+                </div>
+                <div class="example-card" data-example="programme python pour calculer factorielle">
+                    <div class="example-title">🔢 Python - Factorielle</div>
+                    <div class="example-text">Calcul mathématique avec boucle</div>
+                </div>
+                <div class="example-card" data-example="page html avec css moderne">
+                    <div class="example-title">🎨 HTML+CSS - Page web</div>
+                    <div class="example-text">Interface complète stylisée</div>
+                </div>
+                <div class="example-card" data-example="code c++ avec classes">
+                    <div class="example-title">🏗️ C++ - POO</div>
+                    <div class="example-text">Programmation orientée objet</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.11.0/math.min.js"></script>
+    
+    <script>
+        // ===== VARIABLES GLOBALES =====
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const exampleBtn = document.getElementById('exampleBtn');
+        let messageCount = 0;
+        let codeGeneratedCount = 0;
+        let currentLanguage = 'all';
+
+        // ===== TEMPLATES DE CODE =====
+        const codeTemplates = {
+            bat: {
+                'liste': `@echo off
+REM Script pour lister les fichiers d'un répertoire
+echo ========================================
+echo   Listage des fichiers du répertoire
+echo ========================================
+echo.
+
+REM Afficher le répertoire courant
+echo Répertoire actuel : %CD%
+echo.
+
+REM Lister tous les fichiers
+dir /b /a-d
+
+REM Lister tous les dossiers
+echo.
+echo Dossiers :
+dir /b /ad
+
+pause`,
+                'dossier': `@echo off
+REM Script pour créer une structure de dossiers
+title Création de dossiers
+
+echo Création des dossiers...
+mkdir "Projet"
+mkdir "Projet\\src"
+mkdir "Projet\\docs"
+mkdir "Projet\\tests"
+mkdir "Projet\\build"
+
+echo.
+echo Structure créée avec succès !
+echo.
+tree "Projet" /F
+
+pause`,
+                'sauvegarde': `@echo off
+REM Script de sauvegarde automatique
+setlocal EnableDelayedExpansion
+
+set SOURCE=C:\\Documents
+set DEST=D:\\Backup
+set DATE=%date:~-4%-%date:~3,2%-%date:~0,2%
+set TIME=%time:~0,2%-%time:~3,2%
+
+echo ========================================
+echo   SAUVEGARDE AUTOMATIQUE
+echo ========================================
+echo Source : %SOURCE%
+echo Destination : %DEST%\\Backup_%DATE%_%TIME%
+echo.
+
+xcopy "%SOURCE%" "%DEST%\\Backup_%DATE%_%TIME%\\" /E /I /H /Y
+
+echo.
+echo Sauvegarde terminée !
+pause`,
+                'default': `@echo off
+REM Script Batch de base
+title Mon Script Batch
+color 0A
+
+echo ========================================
+echo     BIENVENUE DANS MON SCRIPT
+echo ========================================
+echo.
+
+REM Demander le nom
+set /p nom="Entrez votre nom : "
+
+echo.
+echo Bonjour %nom% !
+echo Date : %date%
+echo Heure : %time%
+
+pause
+exit`
+            },
+
+            vbs: {
+                'message': `' Script VBScript - Boîte de dialogue
+Option Explicit
+
+Dim message, titre, reponse
+
+' Définir le message et le titre
+message = "Bienvenue dans VBScript !" & vbCrLf & _
+          "Ceci est un exemple de boîte de dialogue." & vbCrLf & _
+          "Date : " & Date & vbCrLf & _
+          "Heure : " & Time
+
+titre = "Message VBScript"
+
+' Afficher la boîte de dialogue
+reponse = MsgBox(message, vbInformation + vbOKOnly, titre)
+
+' Demander le nom
+Dim nom
+nom = InputBox("Comment vous appelez-vous ?", "Saisie du nom", "Votre nom")
+
+If nom <> "" Then
+    MsgBox "Bonjour " & nom & " !", vbExclamation, "Salutation"
+End If`,
+                'fichier': `' Script VBScript - Manipulation de fichiers
+Option Explicit
+
+Dim fso, fichier, texte
+
+' Créer l'objet FileSystemObject
+Set fso = CreateObject("Scripting.FileSystemObject")
+
+' Écrire dans un fichier
+Set fichier = fso.CreateTextFile("exemple.txt", True)
+fichier.WriteLine "Ligne 1 : Bonjour depuis VBScript"
+fichier.WriteLine "Ligne 2 : Date - " & Date
+fichier.WriteLine "Ligne 3 : Heure - " & Time
+fichier.Close
+
+MsgBox "Fichier créé avec succès !", vbInformation
+
+' Lire le fichier
+Set fichier = fso.OpenTextFile("exemple.txt", 1)
+texte = fichier.ReadAll
+fichier.Close
+
+MsgBox "Contenu du fichier :" & vbCrLf & vbCrLf & texte, vbInformation
+
+' Nettoyer
+Set fichier = Nothing
+Set fso = Nothing`,
+                'systeme': `' Script VBScript - Informations système
+Option Explicit
+
+Dim wmi, os, info, cpu, mem
+
+' Se connecter au WMI
+Set wmi = GetObject("winmgmts:")
+
+' Obtenir les infos système
+Set os = wmi.ExecQuery("Select * from Win32_OperatingSystem")
+
+info = "===== INFORMATIONS SYSTÈME =====" & vbCrLf & vbCrLf
+
+For Each item In os
+    info = info & "Système : " & item.Caption & vbCrLf
+    info = info & "Version : " & item.Version & vbCrLf
+    info = info & "Architecture : " & item.OSArchitecture & vbCrLf
+    info = info & "Répertoire : " & item.WindowsDirectory & vbCrLf
+Next
+
+' Afficher les informations
+MsgBox info, vbInformation, "Informations Système"`,
+                'default': `' Script VBScript de base
+Option Explicit
+
+Dim nom, age, message
+
+' Demander des informations
+nom = InputBox("Entrez votre nom :", "Saisie")
+
+If nom <> "" Then
+    age = InputBox("Entrez votre âge :", "Saisie", "25")
+    
+    ' Construire le message
+    message = "Bonjour " & nom & " !" & vbCrLf & _
+              "Vous avez " & age & " ans." & vbCrLf & vbCrLf & _
+              "Date : " & Date & vbCrLf & _
+              "Heure : " & Time
+    
+    ' Afficher le résultat
+    MsgBox message, vbInformation, "Informations"
+Else
+    MsgBox "Aucun nom saisi !", vbExclamation
+End If
+
+WScript.Echo "Script terminé !"`
+            },
+
+            python: {
+                'fichier': `# Script Python - Manipulation de fichiers
+import os
+from datetime import datetime
+
+def lire_fichier(nom_fichier):
+    """Lit et affiche le contenu d'un fichier"""
+    try:
+        with open(nom_fichier, 'r', encoding='utf-8') as f:
+            contenu = f.read()
+            print(f"Contenu de {nom_fichier}:")
+            print(contenu)
+            return contenu
+    except FileNotFoundError:
+        print(f"Erreur : Le fichier {nom_fichier} n'existe pas.")
+        return None
+
+def ecrire_fichier(nom_fichier, contenu):
+    """Écrit du contenu dans un fichier"""
+    with open(nom_fichier, 'w', encoding='utf-8') as f:
+        f.write(contenu)
+    print(f"Fichier {nom_fichier} créé avec succès !")
+
+def main():
+    # Créer un fichier exemple
+    nom = "exemple.txt"
+    contenu = f"""Fichier créé le : {datetime.now()}
+    
+Ceci est un exemple de manipulation de fichiers en Python.
+Python est un langage puissant et facile à apprendre !
+
+Fonctionnalités :
+- Lecture de fichiers
+- Écriture de fichiers
+- Gestion des erreurs
+"""
+    
+    ecrire_fichier(nom, contenu)
+    lire_fichier(nom)
+
+if __name__ == "__main__":
+    main()`,
+                'classe': `# Script Python - Programmation Orientée Objet
+class Personne:
+    """Classe représentant une personne"""
+    
+    def __init__(self, nom, age):
+        self.nom = nom
+        self.age = age
+        self.amis = []
+    
+    def se_presenter(self):
+        """Affiche une présentation"""
+        print(f"Bonjour, je m'appelle {self.nom} et j'ai {self.age} ans.")
+    
+    def ajouter_ami(self, ami):
+        """Ajoute un ami à la liste"""
+        self.amis.append(ami)
+        print(f"{ami.nom} est maintenant ami avec {self.nom}")
+    
+    def afficher_amis(self):
+        """Affiche la liste des amis"""
+        if self.amis:
+            print(f"Les amis de {self.nom} :")
+            for ami in self.amis:
+                print(f"  - {ami.nom} ({ami.age} ans)")
+        else:
+            print(f"{self.nom} n'a pas encore d'amis.")
+
+class Etudiant(Personne):
+    """Classe Etudiant héritant de Personne"""
+    
+    def __init__(self, nom, age, ecole):
+        super().__init__(nom, age)
+        self.ecole = ecole
+        self.notes = {}
+    
+    def ajouter_note(self, matiere, note):
+        """Ajoute une note dans une matière"""
+        self.notes[matiere] = note
+        print(f"Note ajoutée : {matiere} = {note}/20")
+    
+    def calculer_moyenne(self):
+        """Calcule la moyenne générale"""
+        if self.notes:
+            moyenne = sum(self.notes.values()) / len(self.notes)
+            print(f"Moyenne de {self.nom} : {moyenne:.2f}/20")
+            return moyenne
+        return 0
+
+# Exemple d'utilisation
+p1 = Personne("Alice", 25)
+p2 = Personne("Bob", 30)
+
+p1.se_presenter()
+p1.ajouter_ami(p2)
+p1.afficher_amis()
+
+e1 = Etudiant("Charlie", 20, "Université Paris")
+e1.se_presenter()
+e1.ajouter_note("Mathématiques", 15)
+e1.ajouter_note("Physique", 17)
+e1.ajouter_note("Informatique", 18)
+e1.calculer_moyenne()`,
+                'web': `# Script Python - Scraping Web (exemple)
+import json
+from datetime import datetime
+
+class WebScraper:
+    """Simulateur de web scraping"""
+    
+    def __init__(self, url):
+        self.url = url
+        self.data = []
+    
+    def fetch_data(self):
+        """Simule la récupération de données"""
+        # Dans un vrai cas, on utiliserait requests et BeautifulSoup
+        print(f"Récupération des données depuis {self.url}...")
+        
+        # Données simulées
+        self.data = [
+            {"titre": "Article 1", "date": "2024-01-15", "vues": 1250},
+            {"titre": "Article 2", "date": "2024-01-16", "vues": 890},
+            {"titre": "Article 3", "date": "2024-01-17", "vues": 2100}
+        ]
+        
+        print(f"✓ {len(self.data)} articles récupérés")
+    
+    def analyze_data(self):
+        """Analyse les données récupérées"""
+        if not self.data:
+            print("Aucune donnée à analyser")
+            return
+        
+        total_vues = sum(item["vues"] for item in self.data)
+        moyenne_vues = total_vues / len(self.data)
+        
+        print(f"\\nAnalyse des données :")
+        print(f"  - Nombre d'articles : {len(self.data)}")
+        print(f"  - Total de vues : {total_vues}")
+        print(f"  - Moyenne de vues : {moyenne_vues:.0f}")
+    
+    def save_to_json(self, filename):
+        """Sauvegarde les données en JSON"""
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(self.data, f, indent=2, ensure_ascii=False)
+        print(f"\\n✓ Données sauvegardées dans {filename}")
+
+# Utilisation
+scraper = WebScraper("https://example.com")
+scraper.fetch_data()
+scraper.analyze_data()
+scraper.save_to_json("data.json")`,
+                'default': `# Script Python de base
+def saluer(nom):
+    """Fonction de salutation"""
+    print(f"Bonjour {nom} !")
+
+def calculer_factorielle(n):
+    """Calcule la factorielle de n"""
+    if n == 0 or n == 1:
+        return 1
+    return n * calculer_factorielle(n - 1)
+
+def main():
+    print("=== Programme Python ===")
+    print()
+    
+    # Salutation
+    nom = input("Entrez votre nom : ")
+    saluer(nom)
+    
+    # Calcul
+    nombre = int(input("Entrez un nombre pour calculer sa factorielle : "))
+    resultat = calculer_factorielle(nombre)
+    print(f"La factorielle de {nombre} est : {resultat}")
+
+if __name__ == "__main__":
+    main()`
+            },
+
+            cpp: {
+                'hello': `// Programme C++ - Hello World
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main() {
+    cout << "==============================" << endl;
+    cout << "   Bienvenue en C++ !" << endl;
+    cout << "==============================" << endl;
+    cout << endl;
+    
+    string nom;
+    cout << "Entrez votre nom : ";
+    getline(cin, nom);
+    
+    cout << endl;
+    cout << "Bonjour " << nom << " !" << endl;
+    cout << "Bienvenue dans le monde du C++" << endl;
+    
+    return 0;
+}`,
+                'classe': `// Programme C++ - Programmation Orientée Objet
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Personne {
+private:
+    string nom;
+    int age;
+    
+public:
+    // Constructeur
+    Personne(string n, int a) : nom(n), age(a) {}
+    
+    // Méthodes
+    void sePresenter() {
+        cout << "Je m'appelle " << nom << " et j'ai " << age << " ans." << endl;
+    }
+    
+    string getNom() { return nom; }
+    int getAge() { return age; }
+    
+    void vieillir() {
+        age++;
+        cout << nom << " a maintenant " << age << " ans." << endl;
+    }
+};
+
+class Etudiant : public Personne {
+private:
+    string ecole;
+    vector<double> notes;
+    
+public:
+    Etudiant(string n, int a, string e) : Personne(n, a), ecole(e) {}
+    
+    void ajouterNote(double note) {
+        notes.push_back(note);
+        cout << "Note ajoutée : " << note << "/20" << endl;
+    }
+    
+    double calculerMoyenne() {
+        if (notes.empty()) return 0;
+        
+        double somme = 0;
+        for (double note : notes) {
+            somme += note;
+        }
+        return somme / notes.size();
+    }
+    
+    void afficherInfos() {
+        sePresenter();
+        cout << "École : " << ecole << endl;
+        cout << "Moyenne : " << calculerMoyenne() << "/20" << endl;
+    }
+};
+
+int main() {
+    cout << "=== Programme C++ - POO ===" << endl << endl;
+    
+    Personne p1("Alice", 25);
+    p1.sePresenter();
+    p1.vieillir();
+    
+    cout << endl;
+    
+    Etudiant e1("Bob", 20, "Université Paris");
+    e1.ajouterNote(15.5);
+    e1.ajouterNote(17.0);
+    e1.ajouterNote(16.5);
+    
+    cout << endl;
+    e1.afficherInfos();
+    
+    return 0;
+}`,
+                'pointeurs': `// Programme C++ - Pointeurs et références
+#include <iostream>
+
+using namespace std;
+
+void afficherValeur(int* ptr) {
+    cout << "Valeur via pointeur : " << *ptr << endl;
+    cout << "Adresse mémoire : " << ptr << endl;
+}
+
+void modifierValeur(int* ptr) {
+    *ptr = *ptr * 2;
+    cout << "Valeur modifiée à : " << *ptr << endl;
+}
+
+void swap(int& a, int& b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+int main() {
+    cout << "=== Pointeurs et Références en C++ ===" << endl << endl;
+    
+    // Pointeurs
+    int nombre = 42;
+    int* ptr = &nombre;
+    
+    cout << "Nombre original : " << nombre << endl;
+    afficherValeur(ptr);
+    modifierValeur(ptr);
+    cout << "Nombre après modification : " << nombre << endl;
+    
+    cout << endl;
+    
+    // Références
+    int x = 10, y = 20;
+    cout << "Avant swap : x = " << x << ", y = " << y << endl;
+    swap(x, y);
+    cout << "Après swap : x = " << x << ", y = " << y << endl;
+    
+    return 0;
+}`,
+                'default': `// Programme C++ de base
+#include <iostream>
+#include <string>
+#include <cmath>
+
+using namespace std;
+
+int main() {
+    cout << "=== Programme C++ ===" << endl << endl;
+    
+    // Variables
+    int entier = 42;
+    double decimal = 3.14159;
+    string texte = "Hello C++";
+    bool condition = true;
+    
+    // Affichage
+    cout << "Entier : " << entier << endl;
+    cout << "Décimal : " << decimal << endl;
+    cout << "Texte : " << texte << endl;
+    cout << "Boolean : " << (condition ? "vrai" : "faux") << endl;
+    
+    // Calculs
+    cout << endl << "Calculs mathématiques :" << endl;
+    cout << "Racine carrée de 16 : " << sqrt(16) << endl;
+    cout << "2 puissance 10 : " << pow(2, 10) << endl;
+    
+    return 0;
+}`
+            },
+
+            html: {
+                'complete': `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Page Web</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        
+        p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block;
+            margin: 20px auto;
+            transition: transform 0.3s;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .card {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .card h3 {
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌟 Bienvenue</h1>
+        <p>
+            Ceci est une page HTML moderne avec du CSS intégré.
+            Elle démontre les bases du développement web.
+        </p>
+        
+        <button class="btn" onclick="alert('Bouton cliqué!')">
+            Cliquez-moi !
+        </button>
+        
+        <div class="card">
+            <h3>À propos</h3>
+            <p>
+                Cette page utilise HTML5, CSS3 et JavaScript
+                pour créer une interface moderne et interactive.
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        console.log('Page chargée avec succès!');
+    </script>
+</body>
+</html>`,
+                'formulaire': `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire de Contact</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        
+        .form-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>📝 Formulaire de Contact</h2>
+        
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="nom">Nom complet</label>
+                <input type="text" id="nom" name="nom" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="sujet">Sujet</label>
+                <select id="sujet" name="sujet">
+                    <option value="info">Information</option>
+                    <option value="support">Support technique</option>
+                    <option value="autre">Autre</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            
+            <button type="submit">Envoyer</button>
+        </form>
+    </div>
+    
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Formulaire soumis avec succès !');
+        });
+    </script>
+</body>
+</html>`,
+                'default': `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ma Page HTML</title>
+</head>
+<body>
+    <h1>Bienvenue sur ma page HTML</h1>
+    <p>Ceci est un paragraphe de texte.</p>
+    
+    <h2>Liste d'exemples</h2>
+    <ul>
+        <li>Élément 1</li>
+        <li>Élément 2</li>
+        <li>Élément 3</li>
+    </ul>
+    
+    <a href="https://www.example.com">Visitez Example.com</a>
+</body>
+</html>`
+            },
+
+            css: {
+                'animation': `/* CSS avec animations */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.title {
+    color: #667eea;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    animation: slideInLeft 0.8s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* Animation de pulsation */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Effet de flou de fond */
+.blur-bg {
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.1);
+}`,
+                'grid': `/* CSS Grid Layout */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.grid-item {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.grid-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* Grid avec zones nommées */
+.layout {
+    display: grid;
+    grid-template-areas:
+        "header header header"
+        "sidebar main main"
+        "footer footer footer";
+    grid-template-columns: 200px 1fr 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 10px;
+    min-height: 100vh;
+}
+
+.header {
+    grid-area: header;
+    background: #667eea;
+    color: white;
+    padding: 20px;
+}
+
+.sidebar {
+    grid-area: sidebar;
+    background: #f5f5f5;
+    padding: 20px;
+}
+
+.main {
+    grid-area: main;
+    padding: 20px;
+}
+
+.footer {
+    grid-area: footer;
+    background: #333;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .layout {
+        grid-template-areas:
+            "header"
+            "main"
+            "sidebar"
+            "footer";
+        grid-template-columns: 1fr;
+    }
+}`,
+                'default': `/* Styles CSS de base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: #f4f4f4;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+p {
+    margin-bottom: 15px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #667eea;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: #5568d3;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}`
+            },
+
+            javascript: {
+                'dom': `// JavaScript - Manipulation du DOM
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Page chargée !');
+    
+    // Sélection d'éléments
+    const titre = document.querySelector('h1');
+    const boutons = document.querySelectorAll('.btn');
+    
+    // Création d'éléments
+    const nouveauDiv = document.createElement('div');
+    nouveauDiv.className = 'carte';
+    nouveauDiv.innerHTML = \`
+        <h3>Carte dynamique</h3>
+        <p>Créée avec JavaScript</p>
+    \`;
+    
+    // Ajout au DOM
+    document.body.appendChild(nouveauDiv);
+    
+    // Gestion d'événements
+    boutons.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+            console.log(\`Bouton \${index + 1} cliqué\`);
+            btn.style.background = getRandomColor();
+        });
+    });
+    
+    // Fonction utilitaire
+    function getRandomColor() {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+    
+    // Animation au scroll
+    window.addEventListener('scroll', () => {
+        const scrollPosition = window.scrollY;
+        titre.style.transform = \`translateY(\${scrollPosition * 0.5}px)\`;
+    });
+});`,
+                'api': `// JavaScript - Appel API
+class ApiManager {
+    constructor(baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+    
+    async fetchData(endpoint) {
+        try {
+            console.log(\`Récupération des données depuis \${endpoint}...\`);
+            
+            const response = await fetch(\`\${this.baseUrl}\${endpoint}\`);
+            
+            if (!response.ok) {
+                throw new Error(\`Erreur HTTP: \${response.status}\`);
+            }
+            
+            const data = await response.json();
+            console.log('Données récupérées:', data);
+            return data;
+            
+        } catch (error) {
+            console.error('Erreur lors de la récupération:', error);
+            throw error;
+        }
+    }
+    
+    async postData(endpoint, data) {
+        try {
+            const response = await fetch(\`\${this.baseUrl}\${endpoint}\`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            return await response.json();
+            
+        } catch (error) {
+            console.error('Erreur lors de l\'envoi:', error);
+            throw error;
+        }
+    }
+}
+
+// Utilisation
+const api = new ApiManager('https://api.example.com');
+
+// Exemple d'utilisation avec async/await
+async function chargerDonnees() {
+    try {
+        const users = await api.fetchData('/users');
+        afficherUsers(users);
+    } catch (error) {
+        afficherErreur(error.message);
+    }
+}
+
+function afficherUsers(users) {
+    users.forEach(user => {
+        console.log(\`\${user.name} - \${user.email}\`);
+    });
+}
+
+function afficherErreur(message) {
+    console.error('Erreur:', message);
+}
+
+// Lancer au chargement
+chargerDonnees();`,
+                'classe': `// JavaScript - Classes ES6+
+class Animal {
+    constructor(nom, age) {
+        this.nom = nom;
+        this.age = age;
+    }
+    
+    parler() {
+        console.log(\`\${this.nom} fait un bruit.\`);
+    }
+    
+    sePresenter() {
+        console.log(\`Je m'appelle \${this.nom} et j'ai \${this.age} ans.\`);
+    }
+}
+
+class Chien extends Animal {
+    constructor(nom, age, race) {
+        super(nom, age);
+        this.race = race;
+    }
+    
+    parler() {
+        console.log(\`\${this.nom} aboie: Woof! Woof!\`);
+    }
+    
+    faireUnTour() {
+        console.log(\`\${this.nom} fait un tour!\`);
+    }
+}
+
+class Chat extends Animal {
+    constructor(nom, age, couleur) {
+        super(nom, age);
+        this.couleur = couleur;
+    }
+    
+    parler() {
+        console.log(\`\${this.nom} miaule: Miaou!\`);
+    }
+    
+    grimper() {
+        console.log(\`\${this.nom} grimpe à l'arbre!\`);
+    }
+}
+
+// Utilisation
+const chien = new Chien('Rex', 5, 'Berger Allemand');
+const chat = new Chat('Minou', 3, 'Gris');
+
+chien.sePresenter();
+chien.parler();
+chien.faireUnTour();
+
+console.log('---');
+
+chat.sePresenter();
+chat.parler();
+chat.grimper();
+
+// Array methods modernes
+const animaux = [chien, chat];
+
+animaux.forEach(animal => animal.sePresenter());
+
+const noms = animaux.map(animal => animal.nom);
+console.log('Noms des animaux:', noms);`,
+                'default': `// JavaScript de base
+console.log('Script JavaScript chargé !');
+
+// Variables
+const nom = 'Alice';
+let age = 25;
+var ancienneVariable = 'obsolète';
+
+// Fonction
+function saluer(personne) {
+    return \`Bonjour \${personne}!\`;
+}
+
+// Arrow function
+const calculer = (a, b) => a + b;
+
+// Objets
+const utilisateur = {
+    nom: 'Bob',
+    age: 30,
+    ville: 'Paris',
+    sePresenter() {
+        console.log(\`Je m'appelle \${this.nom}\`);
+    }
+};
+
+// Tableaux
+const nombres = [1, 2, 3, 4, 5];
+const doubles = nombres.map(n => n * 2);
+const pairs = nombres.filter(n => n % 2 === 0);
+
+// Affichage
+console.log(saluer(nom));
+console.log('Addition:', calculer(5, 3));
+utilisateur.sePresenter();
+console.log('Doubles:', doubles);
+console.log('Pairs:', pairs);`
+            },
+
+            powershell: {
+                'fichiers': `# Script PowerShell - Gestion de fichiers
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "  Script de Gestion de Fichiers" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Variables
+$cheminSource = "C:\\Documents"
+$cheminDest = "D:\\Backup"
+$date = Get-Date -Format "yyyy-MM-dd_HH-mm"
+
+# Fonction pour lister les fichiers
+function Get-FilesList {
+    param($Path)
+    
+    Write-Host "Fichiers dans $Path :" -ForegroundColor Yellow
+    Get-ChildItem -Path $Path | ForEach-Object {
+        Write-Host "  - $($_.Name) ($($_.Length) bytes)" -ForegroundColor Green
+    }
+}
+
+# Fonction de sauvegarde
+function Backup-Files {
+    param($Source, $Destination)
+    
+    Write-Host ""
+    Write-Host "Sauvegarde en cours..." -ForegroundColor Yellow
+    
+    $backupPath = Join-Path $Destination "Backup_$date"
+    
+    try {
+        Copy-Item -Path $Source -Destination $backupPath -Recurse -Force
+        Write-Host "Sauvegarde réussie dans : $backupPath" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Erreur lors de la sauvegarde : $_" -ForegroundColor Red
+    }
+}
+
+# Exécution
+Get-FilesList -Path $cheminSource
+
+$reponse = Read-Host "Voulez-vous effectuer une sauvegarde ? (O/N)"
+if ($reponse -eq "O") {
+    Backup-Files -Source $cheminSource -Destination $cheminDest
+}
+
+Write-Host ""
+Write-Host "Script terminé !" -ForegroundColor Cyan`,
+                'systeme': `# Script PowerShell - Informations système
+Write-Host "=====================================" -ForegroundColor Cyan
+Write-Host "   INFORMATIONS SYSTÈME" -ForegroundColor Cyan
+Write-Host "=====================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Informations OS
+$os = Get-CimInstance Win32_OperatingSystem
+Write-Host "Système d'exploitation :" -ForegroundColor Yellow
+Write-Host "  Nom : $($os.Caption)" -ForegroundColor Green
+Write-Host "  Version : $($os.Version)" -ForegroundColor Green
+Write-Host "  Architecture : $($os.OSArchitecture)" -ForegroundColor Green
+
+Write-Host ""
+
+# Informations processeur
+$cpu = Get-CimInstance Win32_Processor
+Write-Host "Processeur :" -ForegroundColor Yellow
+Write-Host "  Nom : $($cpu.Name)" -ForegroundColor Green
+Write-Host "  Cœurs : $($cpu.NumberOfCores)" -ForegroundColor Green
+Write-Host "  Threads : $($cpu.NumberOfLogicalProcessors)" -ForegroundColor Green
+
+Write-Host ""
+
+# Mémoire
+$mem = Get-CimInstance Win32_OperatingSystem
+$totalMem = [math]::Round($mem.TotalVisibleMemorySize / 1MB, 2)
+$freeMem = [math]::Round($mem.FreePhysicalMemory / 1MB, 2)
+$usedMem = $totalMem - $freeMem
+
+Write-Host "Mémoire :" -ForegroundColor Yellow
+Write-Host "  Total : $totalMem GB" -ForegroundColor Green
+Write-Host "  Utilisée : $usedMem GB" -ForegroundColor Green
+Write-Host "  Libre : $freeMem GB" -ForegroundColor Green
+
+Write-Host ""
+
+# Disques
+Write-Host "Disques :" -ForegroundColor Yellow
+Get-CimInstance Win32_LogicalDisk | Where-Object {$_.DriveType -eq 3} | ForEach-Object {
+    $totalSize = [math]::Round($_.Size / 1GB, 2)
+    $freeSpace = [math]::Round($_.FreeSpace / 1GB, 2)
+    $usedSpace = $totalSize - $freeSpace
+    $percentUsed = [math]::Round(($usedSpace / $totalSize) * 100, 2)
+    
+    Write-Host "  $($_.DeviceID) - Total: $totalSize GB | Utilisé: $usedSpace GB ($percentUsed%)" -ForegroundColor Green
+}`,
+                'default': `# Script PowerShell de base
+Write-Host "=====================================" -ForegroundColor Cyan
+Write-Host "   Script PowerShell" -ForegroundColor Cyan
+Write-Host "=====================================" -ForegroundColor Cyan
+Write-Host ""
+
+# Variables
+$nom = Read-Host "Entrez votre nom"
+$date = Get-Date
+
+# Affichage
+Write-Host ""
+Write-Host "Bonjour $nom !" -ForegroundColor Green
+Write-Host "Date : $($date.ToString('dd/MM/yyyy'))" -ForegroundColor Yellow
+Write-Host "Heure : $($date.ToString('HH:mm:ss'))" -ForegroundColor Yellow
+
+# Fonction
+function Get-SystemInfo {
+    $info = @{
+        Ordinateur = $env:COMPUTERNAME
+        Utilisateur = $env:USERNAME
+        OS = (Get-CimInstance Win32_OperatingSystem).Caption
+    }
+    return $info
+}
+
+# Utilisation
+$infos = Get-SystemInfo
+Write-Host ""
+Write-Host "Informations système :" -ForegroundColor Cyan
+$infos.GetEnumerator() | ForEach-Object {
+    Write-Host "  $($_.Key): $($_.Value)" -ForegroundColor Green
+}
+
+Write-Host ""
+Write-Host "Script terminé !" -ForegroundColor Cyan
+Read-Host "Appuyez sur Entrée pour quitter"`
+            },
+
+            sql: {
+                'complet': `-- Script SQL complet
+-- Création de base de données
+CREATE DATABASE IF NOT EXISTS entreprise_db;
+USE entreprise_db;
+
+-- Table Départements
+CREATE TABLE departements (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    budget DECIMAL(12,2),
+    date_creation DATE
+);
+
+-- Table Employés
+CREATE TABLE employes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE,
+    salaire DECIMAL(10,2),
+    date_embauche DATE,
+    departement_id INT,
+    FOREIGN KEY (departement_id) REFERENCES departements(id)
+);
+
+-- Insertion de données
+INSERT INTO departements (nom, budget, date_creation) VALUES
+('Informatique', 500000.00, '2020-01-15'),
+('Ressources Humaines', 300000.00, '2020-01-15'),
+('Marketing', 400000.00, '2020-02-01');
+
+INSERT INTO employes (nom, prenom, email, salaire, date_embauche, departement_id) VALUES
+('Dupont', 'Jean', 'jean.dupont@email.com', 45000.00, '2020-03-01', 1),
+('Martin', 'Marie', 'marie.martin@email.com', 42000.00, '2020-04-15', 2),
+('Bernard', 'Pierre', 'pierre.bernard@email.com', 48000.00, '2020-05-20', 1);
+
+-- Requêtes de sélection
+-- Tous les employés avec leur département
+SELECT 
+    e.nom,
+    e.prenom,
+    e.email,
+    e.salaire,
+    d.nom AS departement
+FROM employes e
+INNER JOIN departements d ON e.departement_id = d.id
+ORDER BY e.salaire DESC;
+
+-- Salaire moyen par département
+SELECT 
+    d.nom AS departement,
+    COUNT(e.id) AS nombre_employes,
+    AVG(e.salaire) AS salaire_moyen,
+    MAX(e.salaire) AS salaire_max
+FROM departements d
+LEFT JOIN employes e ON d.id = e.departement_id
+GROUP BY d.id, d.nom;
+
+-- Mise à jour
+UPDATE employes 
+SET salaire = salaire * 1.05 
+WHERE departement_id = 1;
+
+-- Vue
+CREATE VIEW vue_employes_details AS
+SELECT 
+    e.id,
+    CONCAT(e.prenom, ' ', e.nom) AS nom_complet,
+    e.email,
+    e.salaire,
+    d.nom AS departement,
+    TIMESTAMPDIFF(YEAR, e.date_embauche, CURDATE()) AS anciennete
+FROM employes e
+INNER JOIN departements d ON e.departement_id = d.id;`,
+                'default': `-- Script SQL de base
+-- Création de table
+CREATE TABLE utilisateurs (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE,
+    age INT,
+    date_inscription DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Insertion de données
+INSERT INTO utilisateurs (nom, email, age) VALUES
+('Alice Dupont', 'alice@email.com', 28),
+('Bob Martin', 'bob@email.com', 35),
+('Charlie Bernard', 'charlie@email.com', 42);
+
+-- Sélection
+SELECT * FROM utilisateurs;
+
+SELECT nom, email 
+FROM utilisateurs 
+WHERE age > 30
+ORDER BY nom;
+
+-- Mise à jour
+UPDATE utilisateurs 
+SET age = 29 
+WHERE nom = 'Alice Dupont';
+
+-- Suppression
+DELETE FROM utilisateurs 
+WHERE age < 25;`
+            }
+        };
+
+        // ===== FONCTIONS UTILITAIRES =====
+        function updateStats() {
+            document.getElementById('msgCount').textContent = messageCount;
+            document.getElementById('codeCount').textContent = codeGeneratedCount;
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+
+        function addMessage(content, isUser, codeInfo = null) {
+            messageCount++;
+            updateStats();
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            if (codeInfo) {
+                contentDiv.innerHTML = content.replace(/\n/g, '<br>');
+                
+                const codeBlock = document.createElement('div');
+                codeBlock.className = 'code-block';
+                
+                const codeHeader = document.createElement('div');
+                codeHeader.className = 'code-header';
+                codeHeader.innerHTML = `
+                    <span class="code-language">${codeInfo.language}</span>
+                    <button class="copy-btn" onclick="copyCode(this)">📋 Copier</button>
+                `;
+                
+                const codeContent = document.createElement('div');
+                codeContent.className = 'code-content';
+                codeContent.textContent = codeInfo.code;
+                
+                codeBlock.appendChild(codeHeader);
+                codeBlock.appendChild(codeContent);
+                contentDiv.appendChild(codeBlock);
+                
+                // Bouton de téléchargement
+                const downloadBtn = document.createElement('button');
+                downloadBtn.className = 'download-btn';
+                downloadBtn.textContent = `💾 Télécharger ${codeInfo.filename}`;
+                downloadBtn.onclick = () => downloadCode(codeInfo.code, codeInfo.filename);
+                contentDiv.appendChild(downloadBtn);
+                
+            } else {
+                contentDiv.innerHTML = content.replace(/\n/g, '<br>');
+            }
+            
+            messageDiv.appendChild(contentDiv);
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai';
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing" style="display: block;">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            chatBox.appendChild(typingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function removeTyping() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+
+        // ===== COPIE DE CODE =====
+        window.copyCode = function(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('.code-content').textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = '✅ Copié!';
+                setTimeout(() => {
+                    button.textContent = '📋 Copier';
+                }, 2000);
+            });
+        };
+
+        // ===== TÉLÉCHARGEMENT DE CODE =====
+        function downloadCode(code, filename) {
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // ===== GÉNÉRATION DE CODE =====
+        function generateCode(language, topic) {
+            codeGeneratedCount++;
+            updateStats();
+
+            const templates = codeTemplates[language];
+            if (!templates) {
+                return {
+                    message: `Désolé, je ne peux pas encore générer du code ${language}.`,
+                    code: null
+                };
+            }
+
+            // Chercher un template correspondant
+            for (let key in templates) {
+                if (topic.includes(key)) {
+                    return {
+                        message: `Voici un code ${language.toUpperCase()} :<br><strong>${key}</strong>`,
+                        code: templates[key],
+                        language: language.toUpperCase(),
+                        filename: `script.${getFileExtension(language)}`
+                    };
+                }
+            }
+
+            // Template par défaut
+            return {
+                message: `Voici un code ${language.toUpperCase()} de base :`,
+                code: templates['default'],
+                language: language.toUpperCase(),
+                filename: `script.${getFileExtension(language)}`
+            };
+        }
+
+        function getFileExtension(language) {
+            const extensions = {
+                'bat': 'bat',
+                'vbs': 'vbs',
+                'python': 'py',
+                'html': 'html',
+                'css': 'css',
+                'javascript': 'js',
+                'cpp': 'cpp',
+                'powershell': 'ps1',
+                'sql': 'sql'
+            };
+            return extensions[language] || 'txt';
+        }
+
+        // ===== TRAITEMENT DE L'IA =====
+        function getAIResponse(userMessage) {
+            const lower = userMessage.toLowerCase();
+
+            // Détection du langage demandé
+            const languages = {
+                'bat': ['bat', 'batch', 'cmd'],
+                'vbs': ['vbs', 'vbscript', 'visual basic script'],
+                'python': ['python', 'py'],
+                'html': ['html', 'page web', 'site'],
+                'css': ['css', 'style', 'design'],
+                'javascript': ['javascript', 'js', 'script'],
+                'cpp': ['c++', 'cpp', 'cplusplus'],
+                'powershell': ['powershell', 'ps1', 'pwsh'],
+                'sql': ['sql', 'base de données', 'requête', 'database']
+            };
+
+            // Chercher le langage
+            for (let lang in languages) {
+                for (let keyword of languages[lang]) {
+                    if (lower.includes(keyword)) {
+                        const result = generateCode(lang, lower);
+                        if (result.code) {
+                            return {
+                                message: result.message,
+                                codeInfo: {
+                                    code: result.code,
+                                    language: result.language,
+                                    filename: result.filename
+                                }
+                            };
+                        }
+                        return { message: result.message };
+                    }
+                }
+            }
+
+            // Aide
+            if (lower.includes('aide') || lower.includes('help')) {
+                return {
+                    message: `<strong>🎯 Je peux générer du code dans ces langages :</strong><br><br>
+                    🦇 <strong>Batch (.bat)</strong> - Scripts Windows<br>
+                    📜 <strong>VBScript</strong> - Visual Basic Script<br>
+                    🐍 <strong>Python</strong> - Langage polyvalent<br>
+                    🌐 <strong>HTML</strong> - Structure web<br>
+                    🎨 <strong>CSS</strong> - Style et design<br>
+                    ⚡ <strong>JavaScript</strong> - Interactivité web<br>
+                    ➕ <strong>C++</strong> - Performance native<br>
+                    🔧 <strong>PowerShell</strong> - Automatisation Windows<br>
+                    🗄️ <strong>SQL</strong> - Base de données<br><br>
+                    <strong>Exemples de commandes :</strong><br>
+                    • "génère un script bat"<br>
+                    • "code python pour fichiers"<br>
+                    • "page html avec css"<br>
+                    • "programme c++ avec classes"`
+                };
+            }
+
+            // Salutations
+            const greetings = {
+                'bonjour': '👋 Bonjour ! Dans quel langage voulez-vous coder aujourd\'hui ?',
+                'salut': '👋 Salut ! Je peux générer du code dans 10+ langages. Que cherchez-vous ?',
+                'merci': '😊 De rien ! N\'hésitez pas pour d\'autres codes !'
+            };
+
+            for (let key in greetings) {
+                if (lower.includes(key)) {
+                    return { message: greetings[key] };
+                }
+            }
+
+            // Réponse par défaut
+            return {
+                message: `Je n'ai pas compris quel langage vous voulez. Essayez :<br>
+                • "génère un script bat"<br>
+                • "code python"<br>
+                • "page html"<br>
+                • "style css"<br>
+                Tapez "aide" pour voir tous les langages disponibles.`
+            };
+        }
+
+        // ===== ENVOI DE MESSAGE =====
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (message === '') return;
+
+            addMessage(message, true);
+            userInput.value = '';
+
+            showTyping();
+
+            setTimeout(() => {
+                removeTyping();
+                const response = getAIResponse(message);
+                addMessage(response.message, false, response.codeInfo);
+            }, 1000 + Math.random() * 1500);
+        }
+
+        // ===== EVENT LISTENERS =====
+        sendBtn.addEventListener('click', sendMessage);
+        
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            chatBox.innerHTML = '';
+            messageCount = 0;
+            codeGeneratedCount = 0;
+            updateStats();
+            addMessage('🔄 Conversation effacée ! Comment puis-je vous aider ?', false);
+        });
+
+        exampleBtn.addEventListener('click', () => {
+            const examples = [
+                'génère un script bat pour lister les fichiers',
+                'code vbs pour afficher une boîte de dialogue',
+                'programme python avec des classes',
+                'page html avec css moderne',
+                'code javascript pour manipuler le DOM',
+                'programme c++ hello world',
+                'script powershell pour infos système',
+                'requête sql complète'
+            ];
+            const example = examples[Math.floor(Math.random() * examples.length)];
+            userInput.value = example;
+        });
+
+        // Sélection de langage dans la sidebar
+        document.querySelectorAll('.language-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.language-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                const lang = this.dataset.lang;
+                userInput.value = `génère un code ${lang}`;
+                userInput.focus();
+            });
+        });
+
+        // Exemples dans la sidebar droite
+        document.querySelectorAll('.example-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const example = this.dataset.example;
+                userInput.value = example;
+                sendMessage();
+            });
+        });
+
+        // ===== INITIALISATION =====
+        updateStats();
+    </script>
+</body>
+</html>

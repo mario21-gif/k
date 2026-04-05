@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu Mystérieux</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #000000, #1a0000);
+      color: white;
+      font-family: 'Courier New', Courier, monospace;
+      text-align: center;
+      padding: 50px 20px;
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    h1 {
+      font-size: 3em;
+      text-shadow: 0 0 20px red, 0 0 40px red;
+      margin-bottom: 50px;
+      animation: flicker 2s infinite alternate;
+    }
+    @keyframes flicker {
+      0% { opacity: 1; }
+      50% { opacity: 0.8; }
+      100% { opacity: 1; }
+    }
+    .menu-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .menu-item {
+      font-size: 18px;
+      padding: 15px 25px;
+      background: linear-gradient(45deg, #8B0000, #DC143C);
+      color: white;
+      border: 2px solid #FF0000;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+    .menu-item:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+    .menu-item:hover {
+      background: linear-gradient(45deg, #DC143C, #FF4500);
+      box-shadow: 0 0 25px rgba(255, 0, 0, 0.8);
+      transform: translateY(-3px);
+    }
+    .menu-item:hover:before {
+      left: 100%;
+    }
+    .menu-item:active {
+      transform: translateY(0px);
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+    }
+    .subtitle {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+      color: #FF6666;
+      text-shadow: 0 0 10px #FF0000;
+    }
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(220, 20, 60, 0.9);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+    .notification.show {
+      opacity: 1;
+    }
+    #sound-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(139,0,0,0.8);
+      color: white;
+      border: 2px solid #FF0000;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 20px;
+      cursor: pointer;
+      box-shadow: 0 0 10px red;
+      transition: 0.3s;
+    }
+    #sound-toggle:hover {
+      background: rgba(220,20,60,0.9);
+      transform: scale(1.1);
+    }
+    #settingsPanel {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #1a0000;
+      border: 2px solid #FF0000;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 0 20px red;
+      text-align: left;
+      color: #FF6666;
+      z-index: 1000;
+    }
+    #settingsPanel label {
+      display: block;
+      margin-bottom: 15px;
+    }
+    #settingsPanel input[type=range] {
+      width: 100%;
+    }
+    #settingsPanel button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: linear-gradient(45deg, #8B0000, #DC143C);
+      border: 2px solid #FF0000;
+      color: white;
+      cursor: pointer;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .tuber93-section {
+      margin-top: 50px;
+      padding: 20px;
+      background: rgba(139,0,0,0.3);
+      border: 2px solid #FF0000;
+      border-radius: 15px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .tuber93-section h2 {
+      color: #FF6666;
+      text-shadow: 0 0 10px #FF0000;
+      margin-bottom: 20px;
+    }
+    .tuber93-image {
+      width: 100%;
+      max-width: 300px;
+      height: auto;
+      border: 3px solid #FF0000;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+      margin: 20px 0;
+    }
+    .url-input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      background: rgba(0,0,0,0.5);
+      border: 2px solid #FF0000;
+      color: white;
+      border-radius: 5px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .url-label {
+      display: block;
+      margin-top: 15px;
+      color: #FF6666;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h1>👻 Le site du tim</h1>
+  <p class="subtitle">Choisissez votre destinée...</p>
+
+  <div class="menu-container">
+    <button class="menu-item" onclick="selectOption('Commencer l\\'aventure')">🌙 Commencer l'Aventure</button>
+    <button class="menu-item" onclick="toggleSettings()">⚙️ Paramètres</button>
+    <button class="menu-item" onclick="openTuber93()">🖼️ Tuber 93</button>
+    <button class="menu-item" onclick="selectOption('Sons mystérieux')">🔊 Sons Mystérieux</button>
+    <button class="menu-item" onclick="selectOption('À propos')">ℹ️ À Propos</button>
+    <button class="menu-item" onclick="openTimSite()">🌐 Site du Tim</button>
+  </div>
+
+  <div class="tuber93-section">
+    <h2>🖼️ Tuber 93 Configuration</h2>
+    
+    <label class="url-label">URL de l'image Tuber 93:</label>
+    <input type="text" id="tuber93ImageUrl" class="url-input" placeholder="https://exemple.com/image.jpg">
+    
+    <label class="url-label">URL du son Tuber 93:</label>
+    <input type="text" id="tuber93SoundUrl" class="url-input" placeholder="https://exemple.com/son.mp3">
+    
+    <button class="menu-item" onclick="updateTuber93()" style="margin-top: 20px; width: 100%;">
+      💾 Mettre à jour Tuber 93
+    </button>
+    
+    <div id="tuber93Preview" style="margin-top: 20px;">
+      <p style="color: #FF6666;">Aperçu de l'image:</p>
+      <img id="previewImage" class="tuber93-image" src="" alt="Aperçu Tuber 93" style="display: none;">
+    </div>
+  </div>
+
+  <div id="notification"></div>
+
+  <audio id="bg-music" loop preload="auto" src="https://digipad.s3.sbg.io.cloud.ovh.net/1552339/acido-iii-super-slowed_mq8fivuqp5e.mp3"></audio>
+  <audio id="button-sound" src="https://digipad.s3.sbg.io.cloud.ovh.net/1547580/bruit-de-pet-qui-rasonne_nbxyjmi3m2.mp3"></audio>
+  <audio id="tuber-sound" src="https://digipad.s3.sbg.io.cloud.ovh.net/1547580/bruit-de-pet-qui-rasonne_nbxyjmi3m2.mp3"></audio>
+
+  <button id="sound-toggle">🔇</button>
+
+  <div id="settingsPanel">
+    <label>
+      Volume Musique: <span id="volumeValue">50</span>%
+      <input type="range" id="volumeSlider" min="0" max="100" value="50">
+    </label>
+    <label>
+      <input type="checkbox" id="soundEffectsCheckbox" checked>
+      Activer Bruits des boutons
+    </label>
+    <button onclick="toggleSettings()">Fermer</button>
+  </div>
+
+  <script>
+    const audio = document.getElementById("bg-music");
+    const soundToggle = document.getElementById("sound-toggle");
+    const volumeSlider = document.getElementById("volumeSlider");
+    const volumeValue = document.getElementById("volumeValue");
+    const soundEffectsCheckbox = document.getElementById("soundEffectsCheckbox");
+    const settingsPanel = document.getElementById("settingsPanel");
+    const buttonSound = document.getElementById("button-sound");
+    const tuberSound = document.getElementById("tuber-sound");
+
+    let started = false;
+    let soundEffectsEnabled = true;
+    // 👇 METTEZ VOS URLs ICI 👇
+    let tuber93ImageUrl = "https://digipad.s3.sbg.io.cloud.ovh.net/1547580/jumpscare_p7dch4t2xhr.png";  // ← Remplacez par votre URL d'image
+    let tuber93SoundUrl = "https://digipad.s3.sbg.io.cloud.ovh.net/1547580/jumpscare_sound_43fpsstf5v8.mp3";    // ← Remplacez par votre URL de son
+
+    // Démarrer la musique automatiquement au premier clic
+    document.addEventListener("click", () => {
+      if (!started) {
+        audio.play().catch(e => console.log("Autoplay bloqué:", e));
+        started = true;
+        soundToggle.textContent = "🔊";
+      }
+    }, { once: true });
+
+    soundToggle.addEventListener("click", () => {
+      if (audio.paused) {
+        audio.play();
+        soundToggle.textContent = "🔊";
+      } else {
+        audio.pause();
+        soundToggle.textContent = "🔇";
+      }
+    });
+
+    volumeSlider.addEventListener("input", () => {
+      audio.volume = volumeSlider.value / 100;
+      volumeValue.textContent = volumeSlider.value;
+    });
+
+    soundEffectsCheckbox.addEventListener("change", () => {
+      soundEffectsEnabled = soundEffectsCheckbox.checked;
+    });
+
+    document.getElementById("tuber93ImageUrl").addEventListener("input", (e) => {
+      const imgUrl = e.target.value;
+      const previewImage = document.getElementById("previewImage");
+      if (imgUrl) {
+        previewImage.src = imgUrl;
+        previewImage.style.display = "block";
+        previewImage.onerror = () => {
+          showNotification("❌ URL d'image invalide");
+          previewImage.style.display = "none";
+        };
+      } else {
+        previewImage.style.display = "none";
+      }
+    });
+
+    function updateTuber93() {
+      playClickSound();
+      tuber93ImageUrl = document.getElementById("https://digipad.s3.sbg.io.cloud.ovh.net/1547580/jumpscare_p7dch4t2xhr.png").value;
+      tuber93SoundUrl = document.getElementById("https://digipad.s3.sbg.io.cloud.ovh.net/1547580/jumpscare_sound_43fpsstf5v8.mp3").value;
+      
+      if (tuber93ImageUrl || tuber93SoundUrl) {
+        showNotification("✅ Tuber 93 mis à jour!");
+        if (tuber93SoundUrl) {
+          tuberSound.src = tuber93SoundUrl;
+        }
+      } else {
+        showNotification("⚠️ Veuillez entrer au moins une URL");
+      }
+    }
+
+    function toggleSettings() {
+      settingsPanel.style.display = settingsPanel.style.display === 'block' ? 'none' : 'block';
+      playClickSound();
+    }
+
+    function playClickSound() {
+      if (soundEffectsEnabled) {
+        buttonSound.currentTime = 0;
+        buttonSound.play().catch(e => {});
+      }
+    }
+
+    function openTimSite() {
+      playClickSound();
+      showNotification("🌐 Ouverture du site du Tim...");
+    }
+
+    function openTuber93() {
+      playClickSound();
+      if (tuber93SoundUrl) {
+        const customTuberSound = new Audio(tuber93SoundUrl);
+        customTuberSound.play().catch(e => {});
+      } else {
+        tuberSound.currentTime = 0;
+        tuberSound.play().catch(e => {});
+      }
+      
+      if (tuber93ImageUrl) {
+        const newWindow = window.open("", "_blank");
+        newWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Tuber 93</title>
+            <style>
+              body {
+                margin: 0;
+                background: #000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+              }
+              img {
+                max-width: 90%;
+                max-height: 90vh;
+                border: 5px solid #FF0000;
+                box-shadow: 0 0 30px red;
+              }
+            </style>
+          </head>
+          <body>
+            <img src="${tuber93ImageUrl}" alt="Tuber 93">
+          </body>
+          </html>
+        `);
+      } else {
+        showNotification("🖼️ Configurez l'URL de l'image Tuber 93!");
+      }
+    }
+
+    function showNotification(message) {
+      const notif = document.getElementById("notification");
+      notif.textContent = message;
+      notif.classList.add("show");
+      setTimeout(() => {
+        notif.classList.remove("show");
+      }, 3000);
+    }
+
+    function selectOption(option) {
+      playClickSound();
+      let message = "";
+
+      switch(option) {
+        case "Commencer l'aventure":
+          message = "🌟 L'aventure commence...";
+          break;
+        case "Sons mystérieux":
+          message = "🔊 Activation des sons...";
+          break;
+        case "À propos":
+          message = "ℹ️ Voici le projet du Tim.";
+          break;
+        case "Quitter":
+          message = "👋 À bientôt...";
+          break;
+        default:
+          message = "Option inconnue.";
+      }
+
+      showNotification(message);
+    }
+  </script>
+</body>
+</html>

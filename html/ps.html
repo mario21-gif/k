@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Interface PS</title>
+<style>
+body {
+    margin: 0;
+    background: linear-gradient(135deg, #0a0f2c, #000);
+    font-family: Arial, sans-serif;
+    color: white;
+    overflow: hidden;
+}
+
+.dashboard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.tiles {
+    display: flex;
+    gap: 25px;
+}
+
+.tile {
+    width: 150px;
+    height: 150px;
+    background: #1a1f4a;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 0 20px rgba(0,0,0,0.6);
+}
+
+.tile span {
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.tile:hover {
+    transform: scale(1.15);
+    background: #2b36ff;
+}
+
+button.btn {
+    margin: 5px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #1a1f4a;
+    color: white;
+    transition: 0.2s;
+}
+
+button.btn:hover {
+    background-color: #2b36ff;
+}
+
+#settingsPanel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #1a1f4a;
+    padding: 15px;
+    border-radius: 12px;
+    display: none;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+#sound-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- Dashboard principal -->
+<div class="dashboard">
+    <div class="tiles">
+        <div class="tile" onclick="openHTML('lol.html')">😂<span>LOL</span></div>
+        <div class="tile" onclick="openHTML('lil.html')">🎵<span>LIL</span></div>
+        <div class="tile" onclick="openHTML('Bouton racourci.html')">🔘<span>Bouton</span></div>
+        <div class="tile" onclick="openHTML('San.html')">🤖<span>IA</span></div>
+        <div class="tile" onclick="alert('Ajout futur'); playClickSound();">➕<span>Plus</span></div>
+    </div>
+</div>
+
+<!-- Boutons supplémentaires -->
+<button id="sound-toggle">🔇</button>
+<button class="btn" onclick="toggleHTML()">📄 Fichiers HTML</button>
+
+<div id="htmlFiles" style="display:none">
+  <button class="btn" onclick="openHTML('lol.html')">📄 LOL</button>
+  <button class="btn" onclick="openHTML('lil.html')">📄 LIL</button>
+  <button class="btn" onclick="openHTML('Bouton racourci.html')">📄 Bouton racourci</button>
+  <button class="btn" onclick="openHTML('San.html')">📄 IA</button>
+</div>
+
+<!-- Panneau paramètres -->
+<div id="settingsPanel">
+    <label>
+      Volume Musique: <span id="volumeValue">50</span>%
+      <input type="range" id="volumeSlider" min="0" max="100" value="50">
+    </label>
+    <br>
+    <label>
+      <input type="checkbox" id="soundEffectsCheckbox" checked>
+      Activer Bruits des boutons
+    </label>
+    <br>
+    <button onclick="toggleSettings()">Fermer</button>
+</div>
+
+<!-- Musique et sons -->
+<audio id="bg-music" loop preload="auto" src="https://digipad.s3.sbg.io.cloud.ovh.net/1552339/acido-iii-super-slowed_mq8fivuqp5e.mp3"></audio>
+<audio id="button-sound" src="votre_son_bouton.mp3"></audio>
+
+<script>
+// Ouvrir fichiers HTML dans un nouvel onglet
+function openHTML(file){
+  playClickSound();
+  window.open("html/" + file,"_blank");
+}
+
+// Jouer le son de clic
+function playClickSound() {
+    const buttonSound = document.getElementById('button-sound');
+    if (document.getElementById('soundEffectsCheckbox').checked) {
+        buttonSound.currentTime = 0;
+        buttonSound.play();
+    }
+}
+
+// Toggle affichage fichiers HTML
+function toggleHTML(){
+  playClickSound();
+  const htmlFiles = document.getElementById('htmlFiles');
+  htmlFiles.style.display = htmlFiles.style.display==="none"?"block":"none";
+}
+
+// Toggle panneau paramètres
+function toggleSettings() {
+    playClickSound();
+    const panel = document.getElementById('settingsPanel');
+    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+}
+
+// Musique
+const audio = document.getElementById("bg-music");
+const soundToggle = document.getElementById("sound-toggle");
+const volumeSlider = document.getElementById("volumeSlider");
+const volumeValue = document.getElementById("volumeValue");
+
+let started = false;
+
+// Démarrer la musique au premier clic
+document.addEventListener("click", () => {
+  if (!started) {
+    audio.play().catch(e => console.log("Autoplay bloqué:", e));
+    started = true;
+    soundToggle.textContent = "🔊";
+  }
+}, { once: true });
+
+// Toggle musique
+soundToggle.addEventListener("click", () => {
+  if (audio.paused) {
+    audio.play();
+    soundToggle.textContent = "🔊";
+  } else {
+    audio.pause();
+    soundToggle.textContent = "🔇";
+  }
+});
+
+// Volume
+volumeSlider.addEventListener("input", () => {
+  audio.volume = volumeSlider.value / 100;
+  volumeValue.textContent = volumeSlider.value;
+});
+</script>
+
+</body>
+</html>
